@@ -1,56 +1,55 @@
-describe('template spec', () => {
-  it('Login benar', () => {
+import LoginPage from '../support/loginpage'
+import dataLogin from '../fixtures/logindata.json'
+
+describe('Quiz 3: Intercepting Login OrangeHRM dengan Format POM', () => {
+
+  beforeEach(() => {
     cy.visit('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login')
-    cy.get('#app [name="username"]').click();
-    cy.get('#app [name="username"]').type('admin');
-    cy.get('#app [name="password"]').type('admin123');
-    cy.get('#app button.oxd-button').click();
   })
 
-    it('Login kondisi username salah', () => {
-    cy.visit('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login')
-    cy.get('#app [name="username"]').click();
-    cy.get('#app [name="username"]').type('admin1');
-    cy.get('#app [name="password"]').type('admin123');
-    cy.get('#app button.oxd-button').click();
-    cy.get('#app p.oxd-alert-content-text').click();
-
-  })
-  
-
- it('Login dengan kondisi password salah', () => {
-    cy.visit('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login')
-    cy.get('#app [name="username"]').click();
-    cy.get('#app [name="username"]').type('admin');
-    cy.get('#app [name="password"]').type('admin1234');
-    cy.get('#app button.oxd-button').click();
-    cy.get('#app p.oxd-alert-content-text').click();
-
+  it('1.1 Login dengan kondisi password dan username benar (Sukses)', () => {
+    LoginPage.pasangIntercept('loginSukses', 200, {
+      body: { status: 'success', redirect: '/web/index.php/dashboard/index' }
+    })
+    
+    LoginPage.isiFormDanLogin(dataLogin.skenario11.user, dataLogin.skenario11.pass)
+    LoginPage.validasiStatusJaringan('loginSukses', 200)
   })
 
-   it('login tanpa mengisi username', () => {
-    cy.visit('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login')
-    cy.get('#app [name="password"]').click();
-    cy.get('#app [name="password"]').type('admin123');
-    cy.get('#app button.oxd-button').click();
-    cy.get('#app span.oxd-text').click();
+  it('1.2 Login dengan kondisi password benar dan username salah', () => {
+    LoginPage.pasangIntercept('usernameSalah', 302, {
+      headers: { 'location': '/web/index.php/auth/login' }
+    })
+
+    LoginPage.isiFormDanLogin(dataLogin.skenario12.user, dataLogin.skenario12.pass)
+    LoginPage.validasiStatusJaringan('usernameSalah', 302)
   })
 
-   it('Login tanpa mengisi password', () => {
-    cy.visit('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login')
-    cy.get('#app [name="username"]').click();
-    cy.get('#app [name="username"]').type('admin');
-    cy.get('#app button.oxd-button').click();
-    cy.get('#app span.oxd-text').click();
+  it('1.3 Login dengan kondisi password salah dan username benar', () => {
+    LoginPage.pasangIntercept('passwordSalah', 401, {
+      body: { error: 'Invalid credentials' }
+    })
+
+    LoginPage.isiFormDanLogin(dataLogin.skenario13.user, dataLogin.skenario13.pass)
+    LoginPage.validasiStatusJaringan('passwordSalah', 401)
   })
 
-   it('passes', () => {
-    cy.visit('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login')
-    cy.get('#app button.oxd-button').click();
-    cy.get('#app div:nth-child(2) > div.oxd-input-group > span.oxd-text').click();
-cy.get('#app div:nth-child(3) > div.oxd-input-group > span.oxd-text').click();
+  it('1.4 Login dengan kondisi password benar tanpa mengisi username', () => {
+    LoginPage.pasangIntercept('usernameKosong', 400, {
+      body: { message: 'Username is required' }
+    })
+
+    LoginPage.isiFormDanLogin(dataLogin.skenario14.user, dataLogin.skenario14.pass)
+    LoginPage.validasiStatusJaringan('usernameKosong', 400)
   })
 
+  it('1.5 Login dengan kondisi username benar tanpa mengisi password', () => {
+    LoginPage.pasangIntercept('passwordKosong', 422, {
+      body: { message: 'Password cannot be empty' }
+    })
+
+    LoginPage.isiFormDanLogin(dataLogin.skenario15.user, dataLogin.skenario15.pass)
+    LoginPage.validasiStatusJaringan('passwordKosong', 422)
+  })
 
 })
-
