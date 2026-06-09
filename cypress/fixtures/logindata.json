@@ -1,0 +1,7 @@
+{
+  "skenario11": { "user": "admin", "pass": "admin123" },
+  "skenario12": { "user": "Admin1", "pass": "admin123" },
+  "skenario13": { "user": "Admin", "pass": "admin1233" },
+  "skenario14": { "user": "", "pass": "admin123" },
+  "skenario15": { "user": "Admin", "pass": "" }
+}
